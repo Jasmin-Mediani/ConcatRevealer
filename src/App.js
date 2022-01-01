@@ -1,25 +1,20 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import Form from "./Form";
+import Risultati from "./Risultati";
+import { useState } from "react";
 
-function App() {
+const App = () => {
+  let [cliccato, setCliccato] = useState(false);
+  let [risultati, setRisultati] = useState({});
+
+  console.log(cliccato);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Form setCliccato={setCliccato} setRisultati={setRisultati} />
+      <Risultati cliccato={cliccato} risultati={risultati}></Risultati>
     </div>
   );
-}
+};
 
 export default App;
