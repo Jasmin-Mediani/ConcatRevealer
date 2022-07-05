@@ -31,8 +31,8 @@ const Form = ({ setCliccato, setRisultati }) => {
 
     setRisultati({});
     axios
-      .post("http://localhost:4000/upload", formData, { //per Node
-        headers: { "Content-Type": "multipart/form-data"},  //per Node
+      .post("http://localhost:8000/upload/", formData, {  //per Django
+        headers: {  'Content-Type' : 'application/x-www-form-urlencoded; charset=UTF-8',  Accept: "application/json"}, //per Django
         // data: formData,
         params: numeroDigitato,
       })
