@@ -26,117 +26,124 @@ app.use(cors());
 
 const axios = require("axios");
 axios.defaults.headers = {
-  "Access-Control-Allow-Origin": "*",
-  "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Content-Type": "application/json",
 };
 
 /***********************************/
 
 //var nomeDelFile = "";
 
-http.listen(4000, function () {
-  // app.get("/prova", function (request, result) {
-  //   result.render("App");
-  // });
+http.listen(4000, function() {
+    // app.get("/prova", function (request, result) {
+    //   result.render("App");
+    // });
 
-  app.post("/upload", function (request, result) {
-    result.header("Access-Control-Allow-Origin", "*");
-    var formData = new formidable.IncomingForm();
-    let numeroDigitato = request.query[0].trim(); // !!!!! i params lato FE tocca prenderli così... !!!!!
+    app.post("/upload", function(request, result) {
+        result.header("Access-Control-Allow-Origin", "*");
+        var formData = new formidable.IncomingForm();
+        let numeroDigitato = request.query[0].trim(); // !!!!! i params lato FE tocca prenderli così... !!!!!
 
-    if (numeroDigitato < 1) {
-      console.log("numero invalido");
-      result.status(400).send({ errore: "numero invalido" });
-      return;
-    }
-
-    formData.parse(request, function (error, fileds, files) {
-      // var extension = files.file.name.substr(files.file.name.lastIndexOf("."));
-      // var newPath = "uploads/" + files.file.name //+ extension;
-      if (!files.file) {
-        result.status(400).send({ errore: "il file non esiste" });
-        return;
-      }
-      const testoParolaPerParola = [];
-
-      let chiaveInOggetto = false;
-      let oggetto = {};
-      let concatenazioni = numeroDigitato; //> 0 ? numeroDigitato : 1;
-
-      var buf = fs.readFileSync(files.file.path); //il file ha il nome del path
-      let bufferStringato = buf.toString();
-      bufferStringato = bufferStringato
-        .replace(/[&\/\\#,+()$~%.'":*?<>{}«»\-]/g, " ")
-        .toLowerCase();
-      bufferStringato = bufferStringato.replace(/(\r\n\t|\n|\r|\t)/gm, " ");
-
-      //console.log(bufferStringato);
-
-      bufferStringato.split(" ").forEach(function (parola) {
-        parola = parola.trim();
-
-        if (parola != "") {
-          testoParolaPerParola.push(parola);
-        }
-      });
-
-      for (var i = 0; i < testoParolaPerParola.length; i++) {
-        let contatore = i;
-        let fraseInesame = []; //questa variabile deve stare nel ciclo, se è globale non viene aggiornata dal secondo ciclo in poi!
-
-        while (
-          fraseInesame.length < concatenazioni &&
-          concatenazioni < testoParolaPerParola.length &&
-          concatenazioni > 0
-        ) {
-          fraseInesame.push(testoParolaPerParola[contatore++]);
+        if (numeroDigitato < 1) {
+            console.log("numero invalido");
+            result.status(400).send({ errore: "numero invalido" });
+            return;
         }
 
-        let fraseStringata = fraseInesame.toString();
-        // fraseStringata = fraseStringata.split(",");
+        formData.parse(request, function(error, fileds, files) {
+            // var extension = files.file.name.substr(files.file.name.lastIndexOf("."));
+            // var newPath = "uploads/" + files.file.name //+ extension;
+            if (!files.file) {
+                result.status(400).send({ errore: "il file non esiste" });
+                return;
+            }
+            const testoParolaPerParola = [];
 
-        // let fraseStringata = fraseInesame;
-        // console.log(fraseStringata);
+            let chiaveInOggetto = false;
+            let oggetto = {};
+            let concatenazioni = numeroDigitato; //> 0 ? numeroDigitato : 1;
 
-        //FOR IN... non ottimizzato!
-        // for (const chiave in oggetto){
-        //     if (chiave == fraseStringata){
-        //         oggetto[chiave]++;
-        //         chiaveInOggetto = true;
-        //         break;
-        //     }
-        // }
+            var buf = fs.readFileSync(files.file.path); //il file ha il nome del path
+            let bufferStringato = buf.toString();
+            bufferStringato = bufferStringato
+                .replace(/[&\/\\#,+()$~%.'":*?<>{}«»\-]/g, " ")
+                .toLowerCase();
+            bufferStringato = bufferStringato.replace(/(\r\n\t|\n|\r|\t)/gm, " ");
 
-        //NOTA: per cercare una chiave in un oggetto non serve fare il ciclo, ma solo chiedere se è definita; a quel punto avviene un ciclo automatico, che è ottimizzato e impiega pochissimi istanti - contro un for in che impiega secondi!
-        var valore = oggetto[fraseStringata];
-        if (valore != undefined) {
-          ++oggetto[fraseStringata];
-          chiaveInOggetto = true;
-        } else oggetto[fraseStringata] = 1;
+            //console.log(bufferStringato);
 
-        if (!chiaveInOggetto) {
-          oggetto[fraseStringata] = 1;
-        }
-      }
+            bufferStringato.split(" ").forEach(function(parola) {
+                parola = parola.trim();
 
-      const oggettoOrdinato = Object.fromEntries(
-        Object.entries(oggetto).sort((a, b) => b[1] - a[1])
-      ); //ordino l'oggettone dalla frase più presente alla meno presente
+                if (parola != "") {
+                    testoParolaPerParola.push(parola);
+                }
+            });
 
-      let oggettoFinale = {};
+            for (var i = 0; i < testoParolaPerParola.length; i++) {
+                let contatore = i;
+                let fraseInesame = []; //questa variabile deve stare nel ciclo, se è globale non viene aggiornata dal secondo ciclo in poi!
 
-      for (const chiave in oggettoOrdinato) {
-        if (oggettoOrdinato[chiave] > 1) {
-          //console.log(chiave, oggettoOrdinato[chiave]) //stampo l'oggettone ordinato
+                while (
+                    fraseInesame.length < concatenazioni &&
+                    concatenazioni < testoParolaPerParola.length &&
+                    concatenazioni > 0
+                ) {
+                    fraseInesame.push(testoParolaPerParola[contatore++]);
+                }
 
-          oggettoFinale[chiave] = oggettoOrdinato[chiave];
-          // .toString()
-          // .replace(",", " ");
-        }
-      }
+                let fraseStringata = fraseInesame.toString();
+                // fraseStringata = fraseStringata.split(",");
 
-      console.log(oggettoFinale);
-      result.send(oggettoFinale);
+                // let fraseStringata = fraseInesame;
+                // console.log(fraseStringata);
+
+                //FOR IN... non ottimizzato!
+                // for (const chiave in oggetto){
+                //     if (chiave == fraseStringata){
+                //         oggetto[chiave]++;
+                //         chiaveInOggetto = true;
+                //         break;
+                //     }
+                // }
+
+                //NOTA: per cercare una chiave in un oggetto non serve fare il ciclo, ma solo chiedere se è definita; a quel punto avviene un ciclo automatico, che è ottimizzato e impiega pochissimi istanti - contro un for in che impiega secondi!
+                var valore = oggetto[fraseStringata];
+                if (valore != undefined) {
+                    ++oggetto[fraseStringata];
+                    chiaveInOggetto = true;
+                } else oggetto[fraseStringata] = 1;
+
+                if (!chiaveInOggetto) {
+                    oggetto[fraseStringata] = 1;
+                }
+            }
+
+            const oggettoOrdinato = Object.fromEntries(
+                Object.entries(oggetto).sort((a, b) => b[1] - a[1])
+            ); //ordino l'oggettone dalla frase più presente alla meno presente
+
+            let oggettoFinale = {};
+
+            for (const chiave in oggettoOrdinato) {
+                if (oggettoOrdinato[chiave] > 1) {
+                    //console.log(chiave, oggettoOrdinato[chiave]) //stampo l'oggettone ordinato
+
+                    oggettoFinale[chiave] = oggettoOrdinato[chiave];
+                    // .toString()
+                    // .replace(",", " ");
+                }
+            }
+
+            // se l'oggetto è {"": 2} non mando niente...
+            if (oggettoFinale[""]) {
+                result.send(oggettoFinale = {})
+
+            } else {
+                console.log(oggettoFinale);
+                result.send(oggettoFinale);
+            }
+
+        });
     });
-  });
 });

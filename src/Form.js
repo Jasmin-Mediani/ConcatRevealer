@@ -31,12 +31,17 @@ const Form = ({ setCliccato, setRisultati }) => {
 
     setRisultati({});
     axios
-      .post("http://localhost:4000/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      .post("http://localhost:4000/upload", formData, { //per Node
+        headers: { "Content-Type": "multipart/form-data"},  //per Node
         // data: formData,
         params: numeroDigitato,
       })
-      .then((res) => setRisultati(res.data));
+      .then((res) => {
+        if (res.data){
+          console.log('pippo', res.data)
+          setRisultati(res.data)
+        }
+      });
   };
 
   const setBottoneCliccato = () => {
